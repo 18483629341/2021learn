@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue发布-订阅模式</title>
+</head>
+<body>
+    <div id="app">
+        订阅试图-1：<span class="box-1">第一个值</span>
+        订阅试图-2：<span class="box-2">第二个值</span>
+    </div>
+    <script>
+        //订阅器模型
+        var Dep = {
+            list: {},
+            listen: function (key, fn) {
+			    //debugger
+                (this.list[key] || (this.list[key] = [])).push(fn);
+            },
+            trigger: function () {
+			    //debugger
+				console.log(arguments)
+                var key = Array.prototype.shift.call(arguments);
+				console.log(arguments)
+                var fns = this.list[key];
+                if (!fns || fns.length == 0) return;
+                for (var i = 0, fn; fn = fns[i++];) {
+                    fn.apply(this, arguments);//发布消息附带的参数
+                }
+            }
+        };
+
+        //劫持的方法 Object.defineProperty方法，给对象的属性赋值
+        var dataHijack = function ({ data, tag, datakey, selector }) {
+            
+            var value = 'luyu';
+            el = document.querySelector(selector);
+			value=el.innerHTML;
+            Object.defineProperty(data, datakey, {
+                //拿到数据
+                get: function () {
+                    console.log('我获取到值了');
+                    return value;
+                },
+                //设置数据
+                set: function (newVal) {
+                    console.log('我设置值了');
+					console.log(newVal);
+                    value = newVal;
+                    Dep.trigger(tag, newVal); //发布消息，更新变化
+                }
+            })
+            //绑定观察者
+            Dep.listen(tag, function (text) {
+                el.innerHTML = text;
+            })
+        };
+
+        var dataObj = {}; //数据
+        //数据劫持
+        dataHijack({
+            data: dataObj,
+            tag: 'view-1',
+            datakey: 'one',
+            selector: '.box-1'
+        });
+		dataObj['one']='13'
+		setTimeout(()=>{
+		   dataObj['one']=18
+		},2000)
+       
+	   dataHijack({
+				data: dataObj,
+				tag: 'view-2',
+				datakey: 'two',
+				selector: '.box-2'
+			});
+		setTimeout(()=>{
+			 
+		   dataObj['two']='99'
+		},6000)
+    </script>
+</body>
+</html>

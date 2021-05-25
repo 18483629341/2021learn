@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
+    <script type="text/javascript">
+    /*
+    function cook() {
+        console.log('开始做饭。');
+        var p = new Promise(function(resolve, reject){ 
+            setTimeout(function() {
+                console.log('做饭完毕！');
+                resolve('鸡蛋炒饭');
+            }, 1000);
+        });
+        return p;
+    }
+    
+    function eat() {
+        console.log('开始吃饭：');
+        var p = new Promise(function(resolve, reject) {
+            setTimeout(function() {
+                console.log('吃饭完毕!');
+                resolve('一块碗和一双筷子');
+            }, 2000);
+        });
+        return p;
+    }
+    function wash(data) {
+        console.log('开始洗碗：' + data);
+        var p = new Promise(function(resolve, reject) { 
+            setTimeout(function() {
+                console.log('洗碗完毕!');
+                resolve('干净的碗筷');
+            }, 2000);
+        });
+        return p;
+    }
+
+	//补充代码
+	cook().then(eat).then((data)=>{
+		return wash(data);
+	}).then(function(data){
+		console.log(data);
+	});
+*/
+// 1
+/*
+   console.log(1)
+new Promise(function (resolve,reject){
+    reject(true)
+        window.setTimeout(function (){
+        resolve(false)
+    },0)
+}).then(function (value){
+    console.log(value)
+}).catch(function (error){
+    console.log(3)
+})
+console.log(4)
+
+// 2
+const promise = new Promise((resolve, reject) => {
+console.log(1)
+resolve()
+console.log(2)
+})
+promise.then(() => {
+console.log(3)
+})
+console.log(4)
+  */
+const TotalTaskCount = 1000; // 一共有1000个链接
+const MaxConcurrency = 10; // 同时下载的链接数最大不超过10
+const url = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','a','b','c','d','e','f','g','h','i','j','k','l','a','b','c','d','e','f','g','h','i','j','k','l','a','b','c','d','e','f','g','h','i','j','k','l','a','b','c','d','e','f','g','h','i','j','k','l','a','b','c','d','e','f','g','h','i','j','k','l','a','b','c','d','e','f','g','h','i','j','k','l']; // 1000个下载链接组成的数组
+const download = function (urlStr) {
+    return new Promise(function(resolve,reject){
+	let startTime = new Date().getTime() 
+	console.log(urlStr)
+	   setTimeout(()=>{
+		  let endTime = new Date().getTime()
+		  let time=endTime-startTime
+		  // console.log("费时"+time)
+		  resolve();
+		  reject();
+	    },10000)
+	})
+}
+
+let todoList = [];
+let nextIndex = 0;
+for (let j = 0; j < MaxConcurrency; j++) {
+  let task = download(url[nextIndex]).then(() => {return j}); // 注意这里resolve的值是任务在todoList的脚标，方便我们在Promise.race之后找到完成的任务脚标
+  todoList.push(task);
+  nextIndex++;
+}
+
+async function run(todo){
+   //console.log(todo)
+   let index =await Promise.race(todo);
+   console.log('index:'+index)// 0 // 这里index等于Promise.race第一个完成的任务的脚标
+   if(nextIndex<url.length){
+     todo[index]=download(url[nextIndex]).then(() => {return index});
+	 nextIndex++
+   }
+   await run(todo);
+}
+run(todoList)
+</script>
+</body>
+</html>

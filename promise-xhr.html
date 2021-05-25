@@ -1,0 +1,60 @@
+<!-- https://www.w3cschool.cn/tryrun/showhtml/tryajax_get_unique -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+
+var stepOne= function(){
+			return new Promise((resolve,reject)=>{
+				console.log('start')
+				setTimeout(()=>{ 
+					console.log('first step finished')
+					resolve()
+				},3000)
+			})
+		}
+
+		var stepTwo = function(){
+			return new Promise((resolve,reject)=>{
+				console.log('two start')
+			   let xhr =new XMLHttpRequest()
+			   xhr.open("GET","/statics/demosource/demo_get.php?t=" + Math.random(),true)
+			   xhr.onreadystatechange = function(){
+						if(xhr.readyState === 4 && xhr.status === 200){
+						   resolve(xhr.responseText)
+						}else{
+						   reject(new Error(xhr.responseText))
+						}
+			    }
+			    xhr.onerror = function(){
+					reject(new Error(xhr.responseText))
+			    }
+				   
+			    xhr.send()	
+				  
+			   
+			})
+		}
+
+		var stepThree = function(data){
+		  return new Promise((resolve,reject)=>{
+			console.log(data)
+		  })
+		}
+function loadXMLDoc(){
+		stepOne()
+		.then(stepTwo)
+		.then((res)=>{stepThree(res)})
+}
+</script>
+</head>
+<body>
+
+<h2>AJAX</h2>
+<button type="button" onclick="loadXMLDoc()">Request data</button>
+<p>Click the button several times to see if the time changes, or if the file is cached.</p>
+<div id="myDiv"></div>
+
+</body>
+</html>

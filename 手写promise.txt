@@ -1,0 +1,24 @@
+function Promi(executor) {
+  let _this = this
+  _this.$$status = 'pending'
+  executor(resolve.bind(this), reject.bind(this))
+
+  function resolve() {
+    if (_this.$$status === 'pending') {
+      _this.$$status = 'full'
+    }
+  }
+  function reject() {
+    if (_this.$$status === 'pending') {
+      _this.$$status = 'reject'
+    }
+  }
+}
+
+let go =new selfPromise(function(resolve, reject){
+    //做一些异步操作
+    setTimeout(function(){
+        console.log('执行完成');
+        resolve('随便什么数据');
+    }, 2000);
+});
