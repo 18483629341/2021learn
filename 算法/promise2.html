@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Promise</title>
+    <body>
+      <p>务开发中经常用Promise，但是第一题真不一定能作对。。。。。emmm，我说的是别犹豫的、能非常肯定的给出答案的哪种...
+
+        作为前端开发，相信日常开发中Promise的使用率应该时最高的，另外面试中js基础部分考察最多的也莫过于Promise，所以Promise的重要性咱就不多说了。
+        
+        说的那么重要，是不是有点夸张了，想想不就几个api吗？但是真的了解他的运行机制吗？现在不管是大厂还是小厂，promise 已经成为了面试必考知识点；可是真正掌握了多少，真正面试的时候，又能有多少把握呢？
+        
+        平时大家忙于业务开发，很多基础知识时间一长就容易淡忘，所以本文根据 Promise 的一些知识点总结了19道题，看看你能做对几道，希望对你有点帮助。
+        
+        PS:下面题目没有附答案，有了答案想必会降低大家的思考深度，起不到什么效果，完整答案会在后面文章单独发出。</p>
+        <p>主要考察点</p>
+      <ul>
+        <li>执行顺序</li>
+        <li>值透传</li>
+        <li>错误处理</li>
+        <li>返回值</li>
+        <li>链式调用</li>
+        <li>执行完本轮的宏任务，回到2，依此循环，直到宏任务和微任务队列都为空</li>
+      </ul>
+      <p>最终考察的还是我们对promise的理解程度</p>
+     
+      <a href="https://blog.csdn.net/weixin_44135121/article/details/104784949">event Loop</a>
+      <a href="https://blog.csdn.net/zz_jesse/article/details/113488380?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-6&spm=1001.2101.3001.4242">其他19道练习题</a>
+    </body>
+</head>
+<body>
+
+<script type="text/javascript">
+/*
+  const promise1 = new Promise((resolve, reject) => {
+    console.log('promise1')
+  })
+  console.log('1', promise1);
+  */
+  //'promise1'
+  // '1' Promise{<pending>}
+
+  /*
+    const promise = Promise.resolve()
+      .then(() => {
+        return promise
+      })
+    promise.catch(console.error)
+*/
+// TypeError: Chaining cycle detected for promise #<Promise>
+
+  //异常处理
+/*
+  Promise.resolve(1)
+  .then(2)
+  .then(Promise.resolve(3))
+  .then(console.log)
+  //1 ??
+
+  Promise.resolve()
+  .then(function success (res) {
+    throw new Error('error')
+  }, function fail1 (e) {
+    console.error('fail1: ', e)
+  })
+  .catch(function fail2 (e) {
+    console.error('fail2: ', e)
+  })
+  // promise2.html:63 fail2:  Error: error
+  // at success (promise2.html:58)
+
+
+Promise.resolve()
+  .then(function success1 (res) {
+    throw new Error('error')
+  }, function fail1 (e) {
+    console.error('fail1: ', e)
+  })
+  .then(function success2 (res) {
+  }, function fail2 (e) {
+    console.error('fail2: ', e)
+  })
+*/
+</script>
+
+<script type="text/javascript">
+/*
+let buying = new Promise(function(resolve,reject){
+  setTimeout(function(){
+    console.log("买菜完成")
+    console.log("下一步做饭")
+    resolve()
+  },3000)
+})
+
+/*
+let cooking = buying.then(
+  (res)=>{
+  switch(res){
+    case '番茄':
+      setTimeout(function(){
+        console.log("番茄炒蛋完成")
+        console.log("下一步吃饭")
+        // return "番茄炒蛋" 这样的返回没用
+      },3000)
+      break;
+    case '方便面':
+      setTimeout(function(){
+        console.log("煮面完成")
+        console.log("下一步吃饭")
+        // return "煮面"
+      },3000)
+      break;
+    default:
+      setTimeout(function(){
+        console.log("午饭完成")
+        console.log("下一步吃饭")
+        // return "简单午饭"
+      },3000)
+      break;
+  }
+},
+(err)=>{reject(err)}
+)
+
+let eat=cooking.then((res)=>{
+  console.log("吃"+res+"了") 
+   //吃undefined了
+  setTimeout(function(){
+    console.log("吃好了") 
+    // 101 return "番茄炒蛋" 127 吃undefined了
+  },3000)
+    
+},
+(err)=>{reject(err)})
+
+buying
+ .then(
+    (res)=>{
+      setTimeout(function(){
+          console.log("午饭完成")
+          console.log("下一步吃饭")
+          return '番茄炒蛋'
+        },3000)
+    },
+    (err)=>{reject(err)}
+  )
+  .then(
+    (res)=>{
+      console.log("吃"+res+"了") 
+      //吃undefined了
+      setTimeout(function(){
+        console.log("吃好了") 
+        // 101 return "番茄炒蛋" 127 吃undefined了
+      },3000)      
+    },
+    (err)=>{reject(err)}
+  )
+  */
+</script>
+<script>
+  // https://www.cnblogs.com/rickdiculous/p/13281578.html
+  // 重新写一遍
+ /*function  buying(){
+  let p = new Promise(function(resolve,reject){
+    setTimeout(function(){
+      console.log("买菜完成")
+      console.log("下一步做饭")
+      resolve()
+    },3000)
+  })
+  return p
+ }
+
+
+ function  cooking(name){
+  let p = new Promise(function(resolve,reject){
+  setTimeout(function(){
+          console.log("午饭完成")
+          console.log("下一步吃饭")
+          resolve(name)
+        },3000)
+    })
+  return p
+ }
+
+
+ function  eating(name){
+  let p = new Promise(function(resolve,reject){
+    setTimeout(function(name){
+        console.log("吃"+name+"好了")
+      },3000)  
+    }) 
+   return p
+}
+
+
+ buying()
+  .then(res=>{
+    return  cooking('番茄炒蛋')
+  })
+  .then(res=>{
+    return eating(res)
+  })*/
+</script>
+<script type="text/javascript">
+    
+  function cook() {
+      console.log('开始做饭。');
+      var p = new Promise(function(resolve, reject){ 
+          setTimeout(function() {
+              console.log('做饭完毕！');
+              resolve('鸡蛋炒饭');
+          }, 1000);
+      });
+      return p;
+  }
+  
+  function eat(data) {
+      console.log('开始吃饭：' + data);  
+      var p = new Promise(function(resolve, reject) {
+          setTimeout(function() {
+              console.log('吃饭完毕!');
+              resolve('一块碗和一双筷子');// resolve()的值会传递给then中function的data参数，供下一个方法使用。
+          }, 2000);
+      });
+      //这里的return的作用是把第一个回调函数的返回结果作为参数,传递给第二个回调函数
+      return p; 
+  }
+  function wash(data) {
+      console.log('开始洗碗：' + data);
+      var p = new Promise(function(resolve, reject) { 
+          setTimeout(function() {
+              console.log('洗碗完毕!');
+              resolve('干净的碗筷');
+          }, 2000);
+      });
+      return p;
+}
+//补充代码
+cook().then(resolve => {
+  return eat(resolve)  //第一个回调函数完成以后，会将返回结果作为参数，传入第二个回调函数。所以这里要用return返回函数去传参。
+}).then(resolve => {
+  return wash(resolve);
+}).then(resolve => {
+  //在Promise实例生成以后，可以用then方法分别指定resolved状态和rejected状态的回调函数。
+
+//then方法执行的是resolve这个回调，并且这个函数都接受Promise对象传出的值作为参数。而这里“鸡蛋炒饭”就是作为参数传递的
+  console.log(resolve);  //resolve中的值是传递到then方法中的参数,只有在then中通过console.log输出传入的参数,才可以在控制台查看到消息
+})
+//也可以像下面这样写,因为这三个函数本身设置的有return才可以这样直接写
+//下一个then的回调函数,会等上一个then中的回调函数执行完毕,返回promise状态,就执行.
+//首先eat,wash本身就是一个函数,所以可以直接作为then中的回到函数.
+//然后eat,wash函数内部也返回了promise,所以这样写没有问题.
+cook()
+  .then(eat)
+  .then(wash);
+
+Promise.resolve(cook()).then(eat)
+  .then(wash);
+</script>
+</body>
+</html>

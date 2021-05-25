@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<script type="text/javascript">
+window.onload = function(){
+ let nums = [3,9,4,0]// [-1,-2,6,4]
+ let target = 9
+ let result = twoSum(nums,target)
+ // console.log("twoSum(nums,target):")
+ // console.log(result)
+ let result1 = addTwoNumbers([5,4,7],[5,5,4])
+//  console.log("addTwoNumbers(nums,nums):")
+//  console.log(result1)
+ let result2 = addTwoNumbers2([5,4,7],[5,5,4])
+//  console.log("addTwoNumbers2(nums,nums):")
+//  console.log(result2)
+ let result3 = isValid("()[{}]")
+ console.log("isValid:")
+ console.log(result3)
+}
+function twoSum(nums, target) {
+    let result =[]
+    if(nums.length<2){
+      return result
+    }
+    for(let i=0;i<nums.length;i++){
+        let item=nums[i];
+        let other=target-item
+		for(let j=i+1;j<nums.length;j++){
+				   
+			if(nums[j]=== other){
+				result = [i,j]
+				break
+			}
+		} 
+		if(result.length>0){
+			return result
+			break
+		}
+    } 
+};
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */
+var addTwoNumbers = function(l1, l2) {
+  let max=l1.length>l2.length?l1:l2
+  let min=l1.length>l2.length?l2:l1
+  let results=[]
+  let isCarry=[false]
+  let j=min.length
+  let differ = max.length-j
+  //debugger
+  for(let i=max.length-1;i>-1;i--){
+      let result = 0
+      if(i-differ>-1){
+        result = max[i]+min[i-differ]
+        if(isCarry[0]){
+          result++
+        }
+        if(result>9){
+          result=result-10
+          isCarry.unshift(true)
+        }else{
+          isCarry.unshift(false) 
+        }
+      }else{
+        result = max[i]
+      }
+     results.push(result)
+  }
+  if(isCarry.length===max.length+1 &&isCarry[0]){
+     results.push(1)
+  }
+  return results
+};
+// 方法2
+var addTwoNumbers2 = function(l1, l2) {
+   let num1=parseInt(l1.join(''))
+   let num2=parseInt(l2.join(''))
+   let sum=num1+num2
+   
+   sum =sum.toString().split("").reverse()
+   return sum
+}
+/**
+ * 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+ */
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+function isValid(s) {
+   let simbalArr=[];
+   let arr = s.split('');
+   console.log(arr)
+   let result = false
+    for(let i=0;i<arr.length;i++){
+       if(s.length%2 ===1 ){
+           return result
+           break
+       }
+    
+        switch(s[i]){
+            case '(':
+                simbalArr.push(s[i])
+                break
+            case '{':
+                simbalArr.push(s[i])
+                break
+            case '[':
+                simbalArr.push(s[i])
+                break 
+            case ')':
+                if(simbalArr[simbalArr.length-1]==='('){
+                  simbalArr.pop()
+                }else{
+                  simbalArr.push(s[i])
+                }
+                break
+            case '}':
+                if(simbalArr[simbalArr.length-1]==='{'){
+                  simbalArr.pop()
+                }else{
+                  simbalArr.push(s[i])
+                }
+                break 
+            case ']':
+                if(simbalArr[simbalArr.length-1]==='['){
+                  simbalArr.pop()
+                }else{
+                  simbalArr.push(s[i])
+                }
+                break  
+            default:
+              console.error('error')
+              break   
+        }
+        console.log(simbalArr)
+    }
+
+    if(simbalArr.length === 0){
+      result =true
+    }
+    return result
+};
+</script>
+</body>
+</html>

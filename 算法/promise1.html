@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <body>
+      <p><b>event loop </b> 它的执行顺序：</p>
+      <ul>
+        <li>一开始整个脚本作为一个宏任务执行</li>
+        <li>执行过程中同步代码直接执行，宏任务进入宏任务队列，微任务进入微任务队列</li>
+        <li>当前宏任务执行完出队，检查微任务列表，有则依次执行，直到全部执行完</li>
+        <li>执行浏览器UI线程的渲染工作</li>
+        <li>检查是否有Web Worker任务，有则执行</li>
+        <li>执行完本轮的宏任务，回到2，依此循环，直到宏任务和微任务队列都为空</li>
+      </ul>
+      <p>
+        <b>微任务包括：</b>
+        MutationObserver、Promise.then()或reject()、Promise为基础开发的其它技术，比如fetch API、V8的垃圾回收过程、Node独有的process.nextTick。
+      </p>
+      <p>
+        <b>宏任务包括：</b>
+        script、script 、setTimeout、setInterval 、setImmediate 、I/O 、UI rendering。
+      </p>
+    </body>
+</head>
+<body>
+
+<script type="text/javascript">
+// 先执行宏任务，再执行微任务。接着执行第二个宏任务…
+/*
+    setTimeout(()=> {
+        console.log("1")
+    })
+    var pro = new Promise((resolved,rejected)=>{
+        console.log("2")
+        resolved("3")
+    });
+    console.log("4")
+    pro.then((res)=>{
+        console.log(res)
+    })
+*/
+</script>
+
+<script>
+  // 如果宏任务中有微任务…
+  /*
+  let pro2 = new Promise((resolved,rejected)=>{
+        setTimeout(()=> {
+           console.log("2")
+           resolved("3")
+        })
+      })
+    console.log("4")
+    pro2.then((res)=>{
+        console.log(res)
+    })
+    setTimeout(()=> {
+        console.log("1");
+    })
+    */
+</script>
+<script>
+  // 如果宏任务中有宏任务…
+  /*  
+  setTimeout(()=> {
+      console.log("1");
+      setTimeout(()=> {
+         console.log("5")          
+      })
+  })
+  var pro = new Promise((resolved,rejected)=>{
+      setTimeout(()=> {
+         console.log("2")
+         resolved("3")
+      })
+  });
+  console.log("4")
+  pro.then((res)=>{
+      console.log(res)
+  })
+  */
+
+  // 第一个 setTimeout 记为 宏2，里面的 setTimeout 暂时放着。
+  // 宏2执行时再创建新的宏
+</script>
+<script>
+  // 如果微任务中有宏任务…
+  /*setTimeout(()=> {
+      console.log("1")
+  })
+  var pro = new Promise((resolved,rejected)=>{
+      setTimeout(()=> {
+         console.log("2");
+         resolved("3")
+      })
+  });
+  pro.then((res)=>{
+      console.log(res);
+      setTimeout(()=> {
+         console.log("4")
+      })
+  })   
+   setTimeout(()=> {
+      console.log("5")
+  })
+  */
+</script>
+<script>
+  // 如果微任务1中有微任务2…，不用暂存
+  // 那么在一个loop循环中先调微任务1，再调微任务2
+  
+    setTimeout(()=> {
+        console.log("1")
+    })
+    var pro = new Promise((resolved,rejected)=>{
+        resolved("3")
+    });
+    pro.then((res)=>{
+        Promise.resolve().then(()=>{
+            console.log("4")
+        });
+        setTimeout(()=> {
+          console.log("2")
+        })
+        console.log(res)
+    })
+  
+</script>
+
+</body>
+</html>
